@@ -1,0 +1,60 @@
+---
+- name: gNMI SET/GET demo for Leaf1 
+  gather_facts: false
+  hosts: leaf11
+  #ignore_errors: yes
+
+
+  collections:
+  - nokia.grpc
+
+
+  tasks:
+  - name : Delete Network Instance
+    gnmi_config:
+      delete:
+        - "/network-instance[name=MAC-VRF30]/"
+  - name: Delete SubInterface
+    gnmi_config:
+      delete:
+        - "/interface[name=ethernet-1/3]/subinterface[index=30]/"
+  - name: Delete VxLAN Interface
+    gnmi_config:
+      delete:
+        - "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/"
+    register: testout1
+
+  - name: dump test1 output
+    debug:
+       msg: '{{ testout1.output }}'
+
+
+- name: gNMI SET/GET demo for Leaf2
+  gather_facts: false
+  hosts: leaf12
+  ignore_errors: yes
+
+
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name: Delete Network Instance
+    gnmi_config:
+      delete:
+        - "/network-instance[name=MAC-VRF30]/"
+  - name: Delete SubInterface
+    gnmi_config:
+      delete:
+        - "/interface[name=ethernet-1/4]/subinterface[index=30]/"
+  - name: Delete VxLAN Interface
+    gnmi_config:
+      delete:
+        - "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/"
+    register: testout2
+
+
+  
+  - name: dump test2 output
+    debug:
+       msg: '{{ testout2.output }}'
