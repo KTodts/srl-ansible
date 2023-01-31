@@ -1,0 +1,50 @@
+{
+    "srl_nokia-interfaces:interface": [
+{% for int in interface %}
+        {
+            "admin-state": "{{ int.admin_state }}",
+            "name": "{{ int.name }}",
+            "description": "{{ int.description }}",
+            "srl_nokia-interfaces-vlans:vlan-tagging": {{ int.vlan_tagging }},
+            "ethernet": { "port-speed": "{{ int.port_speed }}" },
+            "subinterface": [
+{% for sub in int.subinterface %}            
+                {
+                    "index": {{ sub.index }},
+                    "ip-mtu": 9214,
+                    "ipv4": {
+                        "address": [
+                            {
+                                "ip-prefix": "{{ sub.ipv4_address }}"
+                            }
+                        ]
+                    },
+                    "ipv6": {
+                        "address": [
+                            {
+                                "ip-prefix": "{{ sub.ipv6_address }}"
+                            }
+                        ]
+                    },
+                    "srl_nokia-interfaces-vlans:vlan": {
+                        "encap": {
+                            "single-tagged": {
+                                "vlan-id": {{ sub.vlan_id }}
+                            }
+                        }
+                    }
+{% if not loop.last %} {# Comment: IF loop is required for a proper comma (,) processing in a final JSON file #}
+                },
+{% else %}
+                }
+{% endif %}                
+{% endfor %}                
+            ]
+{% if not loop.last %} {# Comment: IF loop is required for a proper comma (,) processing in a final JSON file #}
+        },
+{% else %}
+        }
+{% endif %}     
+{% endfor %}
+    ]
+}

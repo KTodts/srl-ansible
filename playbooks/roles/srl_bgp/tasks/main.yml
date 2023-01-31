@@ -1,0 +1,12 @@
+---
+- name: Update Nodal Configuration (using gNMI SET)
+  gnmi_config:
+    update:
+      - path: /
+        val: '{{ config }}'
+  vars:
+    config: "{{ lookup('file', playbook_dir + '/../build/' + inventory_hostname_short + '/config.json') | from_json }}"
+  register: testout
+- name: dump test output
+  debug:
+    msg: '{{ testout.output }}'    

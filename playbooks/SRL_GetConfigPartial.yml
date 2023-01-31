@@ -1,0 +1,28 @@
+---
+- name: Get Configuration using gNMI
+  gather_facts: false
+  hosts: nokia
+
+  collections:
+  - nokia.grpc
+
+  tasks:
+
+  - name: Get Configuration for a particular interfaces (using gNMI GET)
+    gnmi_get:
+      type: CONFIG
+      path:
+        - '/interface[name=ethernet-1/*]'
+    vars:
+      ansible_grpc_channel_options:
+        grpc.ssl_target_name_override: inventory_hostnam
+      ansible_grpc_environment:
+        GRPC_VERBOSITY: DEBUG
+        GRPC_TRACE: all
+      ansible_persistent_log_messages: True
+
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: '{{ testout.output }}'

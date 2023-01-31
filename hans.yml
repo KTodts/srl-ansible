@@ -1,0 +1,54 @@
+---
+- name: Network Getting Started First Playbook
+  connection: nokia.grpc.gnmi
+  gather_facts: false
+  hosts: nokia
+  vars:
+    ansible_grpc_environment:
+      GRPC_SSL_CIPHER_SUITES: AES128
+      HTTPS_PROXY:
+#     GRPC_VERBOSITY: DEBUG
+#     GRPC_TRACE: all
+#   ansible_persistent_log_messages: True
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name: dump ansible_connection
+    debug:
+      msg: '{{ ansible_connection }} {{ ansible_user }} {{ ansible_password }} {{ ansible_host }} {{  ansible_port  }}'
+
+  - name: TLS command
+    debug:
+      msg: 'openssl s_client -connect {{ ansible_host }}:{{ ansible_port }} 2>/dev/null | openssl x509 -text | grep "^-----BEGIN" -A99 > /tmp/{{ ansible_host }}.pem'
+
+  - name: Workaround for self-signed TLS profiles
+    shell: 'openssl s_client -connect {{ ansible_host }}:{{ ansible_port }} 2>/dev/null | openssl x509 -text | grep "^-----BEGIN" -A99 > /tmp/{{ ansible_host }}.pem'
+
+  - name: Get Nodal Configuration (using gNMI GET)
+    gnmi_get:
+      type: CONFIG
+      path:
+        - interface[name=*]
+    vars:
+      ansible_root_certificates_file: '/tmp/{{ ansible_host }}.pem'
+      #ansible_grpc_channel_options:
+      #  grpc.ssl_target_name_override: “{{ ansible_inventory_hostname }}” #or inventory_hostname
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: '{{ testout.output }}'
+
+  #- name: Update Nodal Configuration (using gNMI SET)
+  #  gnmi_config:
+  #    update:
+  #      - path: /interface[name=ethernet-1/10]/
+  #        val: '{{ interface[0] }}'
+  #      - path: /interface[name=ethernet-1/11]/
+  #        val: '{{ interface[1] }}'
+  #  register: testout
+#
+  #- name: dump test output
+  #  debug:
+  #    msg: '{{ testout.output }}'

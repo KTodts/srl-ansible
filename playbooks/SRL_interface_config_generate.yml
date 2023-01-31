@@ -1,0 +1,14 @@
+---
+- name: Generate ip interface config
+  hosts: nokia
+  gather_facts: no
+  connection: local
+
+  pre_tasks:
+    - name: remove potentially existing previous candidate config directories
+      file: path=configs/{{hostname}}/interfaces.json state=absent
+    #- name: create candidate config directory
+    #  file: path=configs/{{hostname}} state=directory
+
+  roles:
+    - srl_interfaces

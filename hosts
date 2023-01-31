@@ -1,0 +1,16 @@
+[nokia]
+#172.20.20.2
+leaf1
+#clab-demo-leaf12
+
+[nokia:vars]
+ansible_network_os=nokia.srlinux
+ansible_root_certificates_file={{ playbook_dir }}/certs/root-ca.pem
+ansible_port=57400
+ansible_user=admin
+ansible_password=admin
+ansible_connection=nokia.grpc.gnmi
+ansible_gnmi_encoding=JSON_IETF
+#ansible_grpc_channel_options={'grpc.ssl_target_name_override': 'leaf1'}
+ansible_grpc_environment={'GRPC_SSL_CIPHER_SUITES': 'AES128', 'HTTPS_PROXY': None}
+

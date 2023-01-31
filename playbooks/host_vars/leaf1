@@ -1,0 +1,38 @@
+---
+## Generic
+
+os: srlinux
+#login: admin
+#passwd: admin
+hostname: leaf1
+
+## Interfaces
+
+interface:
+  - name: ethernet-1/2
+    description: "Created via Ansible"
+    admin_state: "enable"
+    vlan_tagging: "true"
+    port_speed: "25G"
+    subinterface:
+      - index: 1
+        admin-state: "enable"
+        vlan_id: 1
+        ipv4_address: "10.234.1.0/31"
+        ipv6_address: "fd00:feed:beef::10:1/127"
+      - index: 2
+        admin-state: "enable"
+        vlan_id: 2
+        ipv4_address: "10.234.1.0/31"
+        ipv6_address: "fd00:feed:beef::10:1/127"
+
+## BGP
+
+local_as: 100
+neighbors:
+  - name: BGP-ISP-1
+    ip: 192.168.20.2
+    as: 200
+  - name: BGP-ISP-2
+    ip: 192.168.30.2
+    as: 200

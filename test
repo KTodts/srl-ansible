@@ -1,0 +1,14 @@
+---
+interface:
+  - name: ethernet-1/10
+    description: "gNMI set test1"
+    admin-state: "enable"
+    subinterface:
+      - index: 1
+        admin-state: "enable"
+        ipv4:
+          address:
+            - ip-prefix: "169.254.1.10/32"
+        ipv6:
+          address:
+            - ip-prefix: "fd00:feed:beef::10:1/126"

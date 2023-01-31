@@ -1,0 +1,26 @@
+---
+- name: Network Getting Started First Playbook
+  connection: nokia.grpc.gnmi
+  gather_facts: false
+  hosts: nokia
+
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name: Update Nodal Configuration (using gNMI SET)
+    gnmi_config:
+      update:
+      #replace:
+        #- path: interface[name=ethernet-1/10]
+        - path: /
+          val: '{{ config }}'
+    vars:
+      #config: "configs/{{hostname}}/interfaces.json"
+      config: "{{ lookup('file', playbook_dir + '/configs/{{hostname}}/interfaces.json') | from_json }}"
+      #config: "{{ lookup('file', playbook_dir + '/../build/' + inventory_hostname_short + '/config.json') | from_json }}"
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: '{{ testout.output }}'

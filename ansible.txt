@@ -1,0 +1,9 @@
+Prequisit for ansible
+ansible-galaxy collection install nokia.grpc
+
+pip3 install --upgrade pip
+pip3 install --upgrade setuptools
+pip3 install google
+pip3 install --upgrade google-api-python-client
+pip3 install grpcio
+

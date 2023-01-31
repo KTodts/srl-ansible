@@ -1,0 +1,5 @@
+---
+- hosts: clab-demo-leaf11
+  gather_facts: no
+  roles:
+    - srlinux-play

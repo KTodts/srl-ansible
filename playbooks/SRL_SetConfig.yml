@@ -1,0 +1,28 @@
+---
+- name: Network Getting Started First Playbook
+  connection: nokia.grpc.gnmi
+  gather_facts: false
+  hosts: nokia
+  vars:
+    ansible_grpc_environment:
+      GRPC_SSL_CIPHER_SUITES: AES128
+      HTTPS_PROXY:
+#     GRPC_VERBOSITY: DEBUG
+#     GRPC_TRACE: all
+#   ansible_persistent_log_messages: True
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name: Update Nodal Configuration (using gNMI SET)
+    gnmi_config:
+      update:
+        - path: /interface[name=ethernet-1/10]/
+          val: '{{ interface[0] }}'
+        - path: /interface[name=ethernet-1/11]/
+          val: '{{ interface[1] }}'
+    register: testout
+#
+  - name: dump test output
+    debug:
+      msg: '{{ testout.output }}'

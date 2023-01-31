@@ -1,0 +1,21 @@
+---
+- name: Network Getting Started First Playbook
+  connection: nokia.grpc.gnmi
+  gather_facts: false
+  hosts: nokia
+
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name: Delete Nodal Configuration (using gNMI SET)
+    gnmi_config:
+      delete:
+        #- '/interface[name=ethernet-1/{2,11,12}]/subinterface[index=1]'
+        #- '/interface[name=ethernet-1/{2,11,12}]/subinterface[index=2]'
+        - '/interface[name=ethernet-1/2]'
+    register: testout
+
+  - name: dump test output
+    debug:
+      msg: '{{ testout.output }}'

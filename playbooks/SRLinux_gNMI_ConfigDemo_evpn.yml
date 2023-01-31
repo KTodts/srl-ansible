@@ -1,0 +1,168 @@
+---
+- name: gNMI SET/GET demo for Leaf1 
+  gather_facts: false
+  hosts: leaf11
+  #ignore_errors: yes
+
+
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name : Update Node Configuration Enable Interface
+    gnmi_config:
+      update:
+        - path: "/interface[name=ethernet-1/1]/"
+          val:
+            admin-state: enable
+            vlan-tagging: true
+  - name: Update Nodal Configuration create SubInterfaces
+    gnmi_config:
+      update:
+        - path: "/interface[name=ethernet-1/1]/subinterface[index=30]/"
+          val:
+            type: bridged
+        - path: "/interface[name=ethernet-1/1]/subinterface[index=30]/vlan/encap/single-tagged"
+          val:
+            vlan-id: 30
+  - name: Update Nodal Configuration create VxLAN Inteface      
+    gnmi_config:    
+      update:
+        - path: "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/"
+          val:
+            type: bridged
+        - path: "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/ingress"
+          val:
+            vni: 30
+        - path: "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/egress"
+          val:
+            source-ip: use-system-ipv4-address
+  - name: Update Nodal Configuration create MAC-VRF      
+    gnmi_config:        
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/"
+          val:
+            type: mac-vrf
+        - path: "/network-instance[name=MAC-VRF30]/"
+          val:
+            description: "Created by Ansible"
+  - name: Create Ethernet SubInterface
+    gnmi_config:        
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/interface[name=ethernet-1/1.30]/"
+          val:
+            name: "ethernet-1/1.30"
+  - name: Create VxLAN SubInterface
+    gnmi_config:   
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/vxlan-interface[name=vxlan0.30]/"
+          val:
+            name: "vxlan0.30"
+  - name: Create MAC VRF BGP Configs
+    gnmi_config:   
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-evpn/bgp-instance[id=1]/"
+          val:
+            vxlan-interface: "vxlan0.30"
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-evpn/bgp-instance[id=1]/"
+          val:
+            evi: 30
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-evpn/bgp-instance[id=1]/"
+          val:
+            ecmp: 8
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-vpn/bgp-instance[id=1]/route-target/"
+          val:
+            export-rt: "target:1:30"
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-vpn/bgp-instance[id=1]/route-target/"
+          val:
+            import-rt: "target:1:30"
+    register: testout1
+
+  - name: dump test1 output
+    debug:
+       msg: '{{ testout1.output }}'
+
+- name: gNMI SET/GET demo for Leaf2
+  gather_facts: false
+  hosts: leaf12
+  ignore_errors: yes
+
+
+  collections:
+  - nokia.grpc
+
+  tasks:
+  - name : Update Node Configuration Enable Interface
+    gnmi_config:
+      update:
+        - path: "/interface[name=ethernet-1/1]/"
+          val:
+            admin-state: enable
+            vlan-tagging: true
+  - name: Update Nodal Configuration create SubInterfaces
+    gnmi_config:
+      update:
+        - path: "/interface[name=ethernet-1/1]/subinterface[index=30]/"
+          val:
+            type: bridged
+        - path: "/interface[name=ethernet-1/1]/subinterface[index=30]/vlan/encap/single-tagged"
+          val:
+            vlan-id: 30
+  - name: Update Nodal Configuration create VxLAN Inteface      
+    gnmi_config:    
+      update:
+        - path: "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/"
+          val:
+            type: bridged
+        - path: "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/ingress"
+          val:
+            vni: 30
+        - path: "/tunnel-interface[name=vxlan0]/vxlan-interface[index=30]/egress"
+          val:
+            source-ip: use-system-ipv4-address
+  - name: Update Nodal Configuration create MAC-VRF      
+    gnmi_config:        
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/"
+          val:
+            type: mac-vrf
+        - path: "/network-instance[name=MAC-VRF30]/"
+          val:
+            description: "Created by Ansible"
+  - name: Create Ethernet SubInterface
+    gnmi_config:        
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/interface[name=ethernet-1/1.30]/"
+          val:
+            name: "ethernet-1/1.30"
+  - name: Create VxLAN SubInterface
+    gnmi_config:   
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/vxlan-interface[name=vxlan0.30]/"
+          val:
+            name: "vxlan0.30"
+  - name: Create MAC VRF BGP Configs
+    gnmi_config:   
+        update:
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-evpn/bgp-instance[id=1]/"
+          val:
+            vxlan-interface: "vxlan0.30"
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-evpn/bgp-instance[id=1]/"
+          val:
+            evi: 30
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-evpn/bgp-instance[id=1]/"
+          val:
+            ecmp: 8
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-vpn/bgp-instance[id=1]/route-target/"
+          val:
+            export-rt: "target:1:30"
+        - path: "/network-instance[name=MAC-VRF30]/protocols/bgp-vpn/bgp-instance[id=1]/route-target/"
+          val:
+            import-rt: "target:1:30"
+    register: testout2
+
+
+  
+  - name: dump test2 output
+    debug:
+       msg: '{{ testout2.output }}'
